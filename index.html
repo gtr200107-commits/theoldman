@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMA THE OLD MAN - تالار گفتمان متخصصان (طراحی ۲۰۰۷)</title>
+    <!-- استایل ویندوز 98 برای حفظ فریم ورک قدیمی -->
+    <link rel="stylesheet" href="https://unpkg.com/98.css">
+    <!-- آیکون‌های Bootstrap Icons برای جلوه بیشتر -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- کتابخانه کلاینت Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // --- تنظیمات اتصال به Supabase ---
+        const supabaseUrl = 'https://qlmdatbhqipafbwagmiw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsbWRhdGJocWlwYWZid2FnbWl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NjQyMjAsImV4cCI6MjA4MDM0MDIyMH0.R4F2N_9qS6yO9K-cupLObrQbPuuKEYah1sS8wStMaAM';
+        
+        // ایجاد کلاینت
+        const sb = supabase.createClient(supabaseUrl, supabaseKey);
+        window.sb = sb; // برای دسترسی در کنسول
+        
+        // مدیریت وضعیت کاربر (سشن محلی)
+        let currentUser = null;
+
+        // --- توابع کمکی برای تاریخ شمسی ---
+        function toPersianDate(isoDate) {
+            if (!isoDate) return 'نامعلوم';
+            const date = new Date(isoDate);
+            return date.toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+        window.toPersianDate = toPersianDate;
+    </script>
+
+    <style>
+        /* --- تنظیمات کلی و فونت‌ها --- */
+        @font-face {
+            font-family: 'Tahoma';
+            src: local('Tahoma');
+        }
+        
+        :root {
+            /* سفید کرمی/کاغذی قدیمی */
+            --bg-page: #f0f0e0;
+            --bg-content: #ffffff;
+            --border-color: #a0a0a0;
+            --win-gray: #e0e0e0; /* خاکستری روشن‌تر از ۹۸ */
+            --link-blue: #000080;
+            --header-blue: #004d99; /* آبی کمی روشن‌تر برای حس ۲۰۰۷ */
+            --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1); /* سایه ملایم ۲۰۰۷ */
+        }
+
+        body {
+            background-color: var(--bg-page);
+            margin: 0;
+            padding: 10px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            color: black;
+            padding-bottom: 40px;
+        }
+
+        /* --- کانتینر اصلی ویندوزهای ۹۸.سی‌اس‌اس را کمی صاف می‌کنیم --- */
+        .window {
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-color);
+            box-shadow: var(--shadow-subtle);
+            border-radius: 4px; /* گوشه‌های گرد ملایم ۲۰۰۷ */
+        }
+        
+        .title-bar {
+            background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .title-bar-text {
+            color: var(--header-blue);
+            font-weight: bold;
+        }
+        
+        /* --- هدر سایت (سبک 2000s) --- */
+        .site-header {
+            text-align: center;
+            margin-bottom: 15px;
+            background: #e9eff4; /* آبی کم‌رنگ ۲۰۰۷ */
+            border: 1px solid #c0d0e0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000080; 
+            text-shadow: 1px 1px #fff;
+            font-family: 'Arial Black', sans-serif; 
+            letter-spacing: 1px;
+        }
+        
+        .slogan {
+            color: #555; 
+            font-size: 13px; 
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* --- نوار منو --- */
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 8px;
+            background: #ffffff;
+        }
+
+        .nav-btn {
+            /* دکمه‌های با حس ۲۰۰۷ */
+            background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            min-width: 80px;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 5px 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .nav-btn:hover { background: #e0e0e0; }
+        .nav-btn:active { background: #c0c0c0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+
+        /* --- جداول و لیست‌ها --- */
+        .forum-table {
+            border: none;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .forum-header {
+            background: #f8f8f8;
+            border-bottom: 2px solid #ddd;
+            border-right: none;
+            color: #333;
+            padding: 8px;
+            text-align: right;
+        }
+        
+        .forum-row td {
+            padding: 8px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        .cell-main strong { font-size: 13px; }
+        .cell-stats { background: #f9f9f9; text-align: center; }
+        .cell-last { background: #f3f3f3; font-size: 10px; }
+
+        /* --- پست‌ها --- */
+        .post-container {
+            border: 1px solid var(--border-color);
+            background: var(--bg-content);
+            box-shadow: var(--shadow-subtle);
+            border-radius: 4px;
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .post-sidebar {
+            background: #f7f7f7;
+            border-left: 1px solid var(--border-color);
+            padding: 15px 10px;
+            width: 160px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .username-display {
+            color: #000080; 
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .user-avatar {
+            border: 1px solid #999;
+            padding: 2px;
+            background: #fff;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 4px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+            text-align: center;
+            width: 100%;
+        }
+
+        .role-Owner { background-color: #800000; border: 1px solid gold; }
+        .role-Admin { background-color: #008000; }
+        .role-VIP { background-color: #0000ff; }
+        .role-User { background-color: #888; }
+
+        .user-stats {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .user-stats-item {
+            display: block;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #555;
+            text-align: right;
+            border-bottom: 1px dotted #ddd;
+            padding-bottom: 2px;
+        }
+        
+        .post-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .post-text {
+            flex-grow: 1;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .signature {
+            margin-top: 20px;
+            border-top: 1px dashed #ccc;
+            background: #fafafa;
+            border-left: 5px solid #d0d0d0;
+            padding: 8px;
+            font-size: 10px;
+            color: #555;
+        }
+
+        .post-actions {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 5px;
+            justify-content: flex-end;
+        }
+        
+        /* --- ویرایشگر (سبک ۲۰۰۷) --- */
+        .editor-toolbar {
+            background: #e0e0e0;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            gap: 4px;
+        }
+
+        .editor-btn {
+            background: linear-gradient(to top, #f0f0f0, #ffffff);
+            border: 1px solid #b0b0b0;
+            border-radius: 3px;
+            color: #333;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .editor-btn:active {
+             background: #c0c0c0;
+             box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        textarea#post-textarea {
+            border: 1px solid #b0b0b0;
+            border-radius: 0 0 4px 4px;
+            font-size: 13px;
+            height: 200px;
+            padding: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Tahoma', sans-serif;
+        }
+
+        /* --- کدهای واقعی و نقل قول‌ها --- */
+        pre.code-block {
+            background: #272822; /* تم تیره قدیمی برای کد */
+            color: #f8f8f2;
+            padding: 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+        }
+        
+        .quote-block {
+            background: #f7f9fc;
+            border: 1px solid #c0d0e0;
+            border-left: 5px solid #004d99;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        /* --- ریسپانسیو --- */
+        @media (max-width: 768px) {
+             .post-container {
+                 flex-direction: column;
+             }
+             .post-sidebar { 
+                width: auto;
+                padding: 10px; 
+                flex-direction: row; 
+                align-items: center; 
+                text-align: right;
+                border-bottom: 1px solid var(--border-color);
+                border-left: none;
+                justify-content: flex-start;
+                gap: 10px;
+             }
+             .user-stats { display: none; } /* مخفی کردن آمار در موبایل */
+             .role-badge { width: auto; margin-top: 0; margin-right: 10px; }
+             .username-display { margin-top: 0; }
+             .user-avatar { width: 50px; height: 50px; }
+        }
+
+        /* --- نوار وضعیت پایین --- */
+        .status-bar {
+            /* حفظ حس ویندوز ۹۸ */
+            background: #c0c0c0;
+            border-top: 1px solid #fff;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            z-index: 1000;
+            box-shadow: inset 0 1px 0 #f0f0f0;
+        }
+        
+        .status-field {
+            border: 1px solid #808080;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            padding: 2px 5px;
+            margin-right: 2px;
+            background: #c0c0c0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" style="max-width: 1000px; margin: 0 auto;">
+        <!-- هدر -->
+        <div class="site-header">
+            <div class="logo-text">RAMA THE OLD MAN</div>
+            <div class="slogan">
+                <i class="bi bi-gear-fill" style="color:#000080;"></i> پاتوق تخصصی و نوستالژیک برنامه‌نویسان و هکرها (۲۰۰۷-۲۰۰۸)
+            </div>
+        </div>
+
+        <!-- نوار ابزار اصلی -->
+        <div class="window" style="margin-bottom: 15px;">
+            <div class="title-bar">
+                <div class="title-bar-text">ناوبری سیستم</div>
+            </div>
+            <div class="window-body" style="padding: 0;">
+                <div class="nav-bar" id="auth-buttons">
+                    <!-- دکمه‌ها توسط جاوااسکریپت پر می‌شوند -->
+                </div>
+            </div>
+        </div>
+
+        <!-- محتوای اصلی (تغییر با جاوااسکریپت) -->
+        <div id="main-content">
+            <h1 style="text-align: center; color: #800000;">... در حال اتصال به Supabase DB ...</h1>
+        </div>
+        
+        <!-- پیغام‌های سیستمی -->
+        <div id="message-box-container" style="position: fixed; top: 10px; right: 10px; z-index: 1001; direction: ltr;">
+            <!-- پیام‌ها اینجا قرار می‌گیرند -->
+        </div>
+
+    </div>
+
+    <!-- نوار وضعیت پایین -->
+    <div class="status-bar">
+        <button class="nav-btn" style="min-width: 60px; font-weight: bold; margin-left: 10px; height: 20px; padding: 0 5px;" onclick="app.navigate('home')">شروع</button>
+        <div class="status-field" style="flex-grow: 1;">وضعیت: <span id="status-text">در انتظار اتصال...</span></div>
+        <div class="status-field" style="width: 100px;">آنلاین: <span id="online-users">1</span></div>
+        <div class="status-field" style="width: 200px;" id="clock-full"></div>
+    </div>
+
+    <!-- تمپلیت‌ها (مخفی) -->
+    
+    <!-- صفحه اصلی انجمن -->
+    <template id="tpl-home">
+        <div class="window">
+            <div class="title-bar">
+                <div class="title-bar-text">تالارهای گفتمان اصلی</div>
+            </div>
+            <div class="window-body" style="padding: 0;">
+                <table class="forum-table">
+                    <thead>
+                        <tr>
+                            <th class="forum-header cell-icon" style="width:50px;"></th>
+                            <th class="forum-header cell-main">تالار</th>
+                            <th class="forum-header cell-stats center" style="width:100px;">آمار</th>
+                            <th class="forum-header cell-last" style="width:180px;">آخرین ارسال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forum-list">
+                        <!-- پر می‌شود -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- صفحه نمایش موضوعات (داخل یک انجمن) -->
+    <template id="tpl-forum">
+        <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+            <button class="nav-btn" onclick="app.navigate('home')"><i class="bi bi-folder-symlink"></i> بازگشت به فهرست</button>
+            <button class="nav-btn" onclick="app.navigate('new-topic')" style="background-color:#007bff; color:white;"><i class="bi bi-file-earmark-plus"></i> ایجاد موضوع جدید</button>
+        </div>
+        <div class="window">
+            <div class="title-bar">
+                <div class="title-bar-text" id="forum-page-title">لیست موضوعات</div>
+            </div>
+            <div class="window-body" style="padding: 0;">
+                <table class="forum-table">
+                    <thead>
+                        <tr>
+                            <th class="forum-header" style="width:30px"></th>
+                            <th class="forum-header">عنوان موضوع</th>
+                            <th class="forum-header center" style="width:120px">نویسنده</th>
+                            <th class="forum-header center" style="width:60px">پاسخ</th>
+                            <th class="forum-header center" style="width:60px">بازدید</th>
+                            <th class="forum-header cell-last">آخرین به‌روزرسانی</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topic-list-body">
+                        <!-- پر می‌شود توسط JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- فرم ایجاد موضوع جدید -->
+    <template id="tpl-new-topic">
+        <div style="margin-bottom: 10px;">
+             <button class="nav-btn" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> بازگشت</button>
+        </div>
+        <div class="window">
+            <div class="title-bar"><div class="title-bar-text">ایجاد موضوع جدید</div></div>
+            <div class="window-body">
+                <div class="form-row" style="margin-bottom: 10px;">
+                    <label>عنوان موضوع:</label>
+                    <input type="text" id="new-topic-title" style="width: 100%; padding: 5px;" placeholder="عنوان سوال یا بحث خود را بنویسید...">
+                </div>
+                <div id="new-topic-editor-container"></div>
+                <button class="nav-btn" onclick="app.submitNewTopic()" style="margin-top:10px; width:100%; font-weight:bold;">ارسال موضوع</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- صفحه نمایش پست‌ها -->
+    <template id="tpl-topic">
+        <div style="margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="nav-btn" onclick="app.navigate('forum', app.currentForumId)"><i class="bi bi-arrow-left-square"></i> بازگشت به تالار</button>
+            <h3 style="margin:0; background:#000080; color:white; padding:5px 15px; border-radius:4px; font-size:15px; box-shadow:var(--shadow-subtle);" id="topic-title-display"></h3>
+        </div>
+        
+        <div id="posts-container">
+            <!-- پست‌ها اینجا می‌آیند -->
+        </div>
+
+        <div class="window" style="margin-top: 20px;">
+            <div class="title-bar"><div class="title-bar-text">ارسال پاسخ</div></div>
+            <div class="window-body">
+                <div id="quick-reply-box">
+                    <!-- اگر لاگین باشد فرم می‌آید، نباشد پیام -->
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- تمپلیت ویرایشگر و فرم پاسخ -->
+    <template id="tpl-editor">
+        <div class="editor-toolbar">
+            <button class="editor-btn" title="Bold [b]متن[/b]" data-tag="b"><i class="bi bi-type-bold"></i></button>
+            <button class="editor-btn" title="Italic [i]متن[/i]" data-tag="i"><i class="bi bi-type-italic"></i></button>
+            <button class="editor-btn" title="Underline [u]متن[/u]" data-tag="u"><i class="bi bi-type-underline"></i></button>
+            <button class="editor-btn" title="Quote [quote]متن[/quote]" data-tag="quote"><i class="bi bi-chat-left-quote"></i></button>
+            <button class="editor-btn" title="Code Block [code]کد[/code]" data-tag="code"><i class="bi bi-code-slash"></i></button>
+            <button class="editor-btn" title="Image [img]لینک[/img]" data-tag="img"><i class="bi bi-image"></i></button>
+            <button class="editor-btn" title="Link [url=لینک]متن[/url]" data-tag="url"><i class="bi bi-link"></i></button>
+            <button class="editor-btn" title="Color [color=red]متن[/color]" data-tag="color" style="color:red;"><i class="bi bi-palette"></i></button>
+        </div>
+        <textarea id="post-textarea" placeholder="متن خود را اینجا بنویسید (استفاده از تگ‌های BBCode)..."></textarea>
+        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+            <button class="nav-btn" id="preview-btn" style="background:#e0f0ff;"><i class="bi bi-eye"></i> پیش‌نمایش</button>
+            <button class="nav-btn" id="submit-post-btn" style="background: #008000; color: white; font-weight: bold;"><i class="bi bi-send-check"></i> ارسال پاسخ</button>
+        </div>
+        <div id="post-preview" class="window" style="margin-top: 10px; display: none;">
+            <div class="title-bar"><div class="title-bar-text">پیش‌نمایش پست شما</div></div>
+            <div class="window-body" style="min-height: 50px;"></div>
+        </div>
+    </template>
+
+    <!-- صفحه ورود / ثبت نام -->
+    <template id="tpl-auth">
+        <div class="window auth-card" style="max-width: 400px; margin: 20px auto;">
+            <div class="title-bar">
+                <div class="title-bar-text" id="auth-title">ورود به سیستم</div>
+            </div>
+            <div class="window-body">
+                <p style="font-size: 10px; color: #800000; text-align: center;">سیستم یکپارچه SQL - اتصال به Supabase</p>
+                <fieldset style="border-radius: 4px; padding: 10px; margin-bottom: 10px;">
+                    <legend style="background:#f0f0f0; border: 1px solid #ccc; border-radius: 3px; padding: 0 5px;">مشخصات</legend>
+                    <div class="form-row" style="margin-bottom: 8px;">
+                        <label style="display:block;">نام کاربری:</label>
+                        <input type="text" id="auth-username" required style="width: 100%;">
+                    </div>
+                    <div class="form-row">
+                        <label style="display:block;">کلمه عبور:</label>
+                        <input type="password" id="auth-password" required style="width: 100%;">
+                    </div>
+                </fieldset>
+                
+                <fieldset id="registration-fields" style="display: none; border-radius: 4px; padding: 10px;">
+                    <legend style="background:#f0f0f0; border: 1px solid #ccc; border-radius: 3px; padding: 0 5px;">پروفایل</legend>
+                    <div class="form-row" style="margin-bottom: 8px;">
+                        <label style="display:block;">لینک عکس پروفایل (URL):</label>
+                        <input type="text" id="auth-avatar" placeholder="https://..." style="width: 100%;">
+                    </div>
+                    <div class="form-row">
+                        <label style="display:block;">امضا:</label>
+                        <input type="text" id="auth-sign" placeholder="متن امضا" style="width: 100%;">
+                    </div>
+                    <div style="text-align: center; margin-top: 5px;">
+                         <img id="avatar-preview" class="avatar-preview" onerror="this.src='https://placehold.co/80x80/c0c0c0/808080?text=Error';" src="https://placehold.co/80x80/c0c0c0/808080?text=Preview" alt="Avatar Preview" style="width:60px; height:60px; border:1px solid #ccc;">
+                    </div>
+                </fieldset>
+
+                <div style="margin-top: 15px; text-align: center; display: flex; justify-content: space-between;">
+                    <button id="login-btn" onclick="authApp.login()" class="nav-btn">
+                        <i class="bi bi-person-fill"></i> ورود به سیستم
+                    </button>
+                    <button id="register-btn" onclick="authApp.showRegister()" class="nav-btn" style="background: #008080; color: white;">
+                        <i class="bi bi-person-plus-fill"></i> ثبت نام جدید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- اسکریپت اصلی -->
+    <script>
+        // --- توابع کمکی UI ---
+        function showMessage(text, type = 'info') {
+            const container = document.getElementById('message-box-container');
+            const color = type === 'error' ? '#c00' : (type === 'success' ? '#080' : '#00f');
+            const title = type === 'error' ? 'خطای سیستم' : (type === 'success' ? 'عملیات موفق' : 'پیغام');
+
+            const msgBox = document.createElement('div');
+            msgBox.className = 'window';
+            msgBox.style.width = '300px';
+            msgBox.style.marginBottom = '5px';
+            msgBox.style.direction = 'rtl'; // RTL برای محتوای پیغام
+            msgBox.innerHTML = `
+                <div class="title-bar" style="background: ${color}; color: white;">
+                    <div class="title-bar-text">${title}</div>
+                    <div class="title-bar-controls"><button aria-label="Close" onclick="this.parentElement.parentElement.parentElement.remove()"></button></div>
+                </div>
+                <div class="window-body" style="font-size: 12px; padding: 8px;">${text}</div>
+            `;
+            container.prepend(msgBox);
+            
+            setTimeout(() => msgBox.remove(), 7000); // 7 ثانیه نمایش
+        }
+        
+        // --- تبدیل BBCode به HTML ---
+        function BBCodeToHTML(text) {
+            if (!text) return '';
+            let html = text;
+
+            html = html.replace(/\[b\](.*?)\[\/b\]/gs, '<strong>$1</strong>');
+            html = html.replace(/\[i\](.*?)\[\/i\]/gs, '<em>$1</em>');
+            html = html.replace(/\[u\](.*?)\[\/u\]/gs, '<u>$1</u>');
+            html = html.replace(/\[color=(.+?)\](.*?)\[\/color\]/gs, '<span style="color:$1;">$2</span>');
+            html = html.replace(/\[url=(.+?)\](.*?)\[\/url\]/gs, '<a href="$1" target="_blank" style="color:var(--link-blue); text-decoration:underline;">$2</a>');
+            html = html.replace(/\[img\](.*?)\[\/img\]/gs, '<img src="$1" onerror="this.style.display=\'none\'; this.onerror=null;" alt="تصویر" style="max-width:100%; height:auto; border: 1px solid #ccc; border-radius: 4px;">');
+            
+            html = html.replace(/\[quote=(.+?)\](.*?)\[\/quote\]/gs, 
+                `<div class="quote-block"><div class="quote-header">نقل قول از <span style="color:#000080; font-weight:bold;">$1</span>:</div>$2</div>`);
+            html = html.replace(/\[quote\](.*?)\[\/quote\]/gs, 
+                `<div class="quote-block"><div class="quote-header">نقل قول:</div>$1</div>`);
+
+            html = html.replace(/\[code\](.*?)\[\/code\]/gs, 
+                `<pre class="code-block">$1</pre>`);
+
+            html = html.replace(/\n/g, '<br>');
+
+            return html;
+        }
+
+        const defaultAvatars = [
+            'https://placehold.co/100x100/404040/00FF00?text=Matrix',
+            'https://placehold.co/100x100/FF0000/FFFFFF?text=ADMIN',
+            'https://placehold.co/100x100/0000FF/FFFFFF?text=VIP',
+            'https://placehold.co/100x100/808080/FFFFFF?text=USER'
+        ];
+
+        // --- مدیریت داده‌ها (SUPABASE Implementation) ---
+        const dbService = {
+            
+            // دریافت لیست تالارها
+            async fetchForums() {
+                try {
+                    const { data, error } = await sb
+                        .from('forums')
+                        .select('*')
+                        .order('sort_order', { ascending: true });
+                    
+                    if (error) throw error;
+                    return data;
+                } catch (err) {
+                    console.error("Error fetching forums:", err);
+                    showMessage('خطا در دریافت لیست تالارها. آیا SQL اجرا شده است؟', 'error');
+                    return [];
+                }
+            },
+
+            // دریافت موضوعات یک تالار
+            async fetchTopics(forumId) {
+                try {
+                    // تلاش برای Join کردن با جدول Users برای گرفتن نام نویسنده
+                    // نکته: اگر Foreign Key در دیتابیس دقیق ست نشده باشد، این بخش ممکن است خطا دهد.
+                    // در آن صورت fallback ساده‌تری نیاز است. اما طبق SQL ارسالی، Relation وجود دارد.
+                    const { data, error } = await sb
+                        .from('topics')
+                        .select('*, users (username)') // Join با جدول users
+                        .eq('forum_id', forumId)
+                        .order('last_post_date', { ascending: false });
+
+                    if (error) throw error;
+                    return data.map(topic => ({
+                        ...topic,
+                        authorUsername: topic.users ? topic.users.username : 'Unknown'
+                    }));
+                } catch (err) {
+                    console.error("Error fetching topics:", err);
+                    showMessage('خطا در دریافت موضوعات.', 'error');
+                    return [];
+                }
+            },
+
+            // دریافت پست‌های یک موضوع
+            async fetchPosts(topicId) {
+                try {
+                    const { data, error } = await sb
+                        .from('posts')
+                        .select('*, users (username, role, avatar_url, signature, post_count, likes_count, join_date)')
+                        .eq('topic_id', topicId)
+                        .order('creation_date', { ascending: true });
+
+                    if (error) throw error;
+                    
+                    return data.map(post => ({
+                        ...post,
+                        authorUsername: post.users ? post.users.username : 'Unknown',
+                        userDetails: post.users ? {
+                            username: post.users.username,
+                            role: post.users.role,
+                            avatar: post.users.avatar_url,
+                            sign: post.users.signature,
+                            joinDate: post.users.join_date,
+                            postCount: post.users.post_count,
+                            likesCount: post.users.likes_count
+                        } : null
+                    }));
+                } catch (err) {
+                    console.error("Error fetching posts:", err);
+                    return [];
+                }
+            },
+            
+            // دریافت اطلاعات یک تالار خاص (برای تایتل)
+            async getForumInfo(forumId) {
+                 const { data } = await sb.from('forums').select('title').eq('id', forumId).single();
+                 return data;
+            },
+            
+            // دریافت اطلاعات یک موضوع خاص
+            async getTopicInfo(topicId) {
+                 const { data } = await sb.from('topics').select('title, forum_id').eq('id', topicId).single();
+                 return data;
+            },
+
+            // ارسال پست جدید
+            async sendPost(topicId, content, userId) {
+                // 1. ایجاد پست
+                const { error } = await sb.from('posts').insert([
+                    { topic_id: topicId, author_id: userId, content: content }
+                ]);
+                if (error) throw error;
+
+                // 2. آپدیت کردن آمار موضوع (Topic)
+                // در محیط واقعی بهتر است از Database Triggers یا Supabase RPC استفاده شود
+                // اما اینجا کلاینت‌ساید انجام می‌دهیم
+                
+                // دریافت تعداد فعلی ریپلای‌ها
+                const { count } = await sb.from('posts').select('*', { count: 'exact', head: true }).eq('topic_id', topicId);
+                
+                await sb.from('topics').update({ 
+                    last_post_date: new Date().toISOString(),
+                    replies: count // تقریبی
+                }).eq('id', topicId);
+                
+                // 3. آپدیت تعداد پست‌های کاربر
+                // این هم بهتر است سمت سرور باشد
+                /* let { data: u } = await sb.from('users').select('post_count').eq('id', userId).single();
+                if(u) {
+                    await sb.from('users').update({ post_count: u.post_count + 1 }).eq('id', userId);
+                } */
+            },
+
+            async createTopic(forumId, title, content, userId) {
+                 // 1. ایجاد موضوع در جدول topics
+                 const { data: topicData, error: topicError } = await sb
+                    .from('topics')
+                    .insert([{ forum_id: forumId, title: title, author_id: userId, last_post_date: new Date().toISOString() }])
+                    .select()
+                    .single();
+
+                 if (topicError) throw topicError;
+                 
+                 // 2. ایجاد پست اول
+                 const { error: postError } = await sb
+                    .from('posts')
+                    .insert([{ topic_id: topicData.id, author_id: userId, content: content }]);
+
+                 if (postError) {
+                     // اگر پست فیل شد، بهتر است تاپیک هم پاک شود (Rollback دستی)
+                     await sb.from('topics').delete().eq('id', topicData.id);
+                     throw postError;
+                 }
+                 
+                 return topicData.id;
+            }
+        };
+
+
+        // --- سیستم احراز هویت (سفارشی شده برای SQL شما) ---
+        const authApp = {
+            getRandomAvatar: function() {
+                const rnd = Math.floor(Math.random() * defaultAvatars.length);
+                return defaultAvatars[rnd];
+            },
+            
+            showRegister: function() { authApp.toggleAuthMode('register'); },
+            showLogin: function() { authApp.toggleAuthMode('login'); },
+            
+            toggleAuthMode: function(mode) {
+                document.getElementById('auth-title').textContent = mode === 'register' ? 'ثبت نام جدید' : 'ورود به سیستم';
+                document.getElementById('registration-fields').style.display = mode === 'register' ? 'block' : 'none';
+                document.getElementById('login-btn').textContent = mode === 'register' ? 'بازگشت به ورود' : 'ورود به سیستم';
+                document.getElementById('register-btn').textContent = mode === 'register' ? 'ثبت نام و عضویت' : 'ثبت نام جدید';
+                
+                document.getElementById('register-btn').onclick = mode === 'register' ? authApp.register : authApp.showRegister;
+                document.getElementById('login-btn').onclick = mode === 'register' ? authApp.showLogin : authApp.login;
+                
+                if (mode === 'register') {
+                    document.getElementById('auth-avatar').oninput = (e) => {
+                        document.getElementById('avatar-preview').src = e.target.value || authApp.getRandomAvatar();
+                    };
+                }
+            },
+
+            register: async function() {
+                const username = document.getElementById('auth-username').value.trim();
+                const password = document.getElementById('auth-password').value;
+                let avatar = document.getElementById('auth-avatar').value.trim();
+                const sign = document.getElementById('auth-sign').value.trim();
+                
+                if (!username || !password) { showMessage('نام کاربری و کلمه عبور الزامی است.', 'error'); return; }
+
+                try {
+                    // چک کردن تکراری بودن نام کاربری
+                    const { data: existingUser } = await sb.from('users').select('id').eq('username', username).single();
+                    if (existingUser) { showMessage('این نام کاربری قبلاً گرفته شده است.', 'error'); return; }
+
+                    if (!avatar) avatar = authApp.getRandomAvatar();
+
+                    // درج در دیتابیس Supabase
+                    // فیلد auth_uid را یک مقدار رندوم می‌گذاریم چون از سیستم Auth خود Supabase استفاده نمی‌کنیم
+                    const fakeAuthUid = 'user_' + Math.random().toString(36).substr(2, 9);
+
+                    const { error } = await sb.from('users').insert([
+                        { 
+                            username: username, 
+                            password: password, // ذخیره پسورد به صورت متن ساده (طبق درخواست شما برای شبیه‌سازی)
+                            auth_uid: fakeAuthUid,
+                            avatar_url: avatar,
+                            signature: sign,
+                            role: 'User'
+                        }
+                    ]);
+
+                    if (error) throw error;
+                    
+                    showMessage('✅ ثبت نام موفقیت‌آمیز بود. اکنون وارد شوید.', 'success');
+                    authApp.showLogin();
+
+                } catch (error) {
+                    console.error("Registration failed:", error);
+                    showMessage(`خطا در ثبت نام: ${error.message}`, 'error');
+                }
+            },
+
+            login: async function() {
+                const username = document.getElementById('auth-username').value.trim();
+                const password = document.getElementById('auth-password').value;
+
+                if (!username || !password) { showMessage('لطفا نام کاربری و رمز عبور را وارد کنید.', 'error'); return; }
+                
+                try {
+                    // کوئری مستقیم به جدول users (طبق مدل شبیه‌سازی شما)
+                    const { data, error } = await sb
+                        .from('users')
+                        .select('*')
+                        .eq('username', username)
+                        .eq('password', password)
+                        .single();
+
+                    if (error || !data) {
+                        showMessage('نام کاربری یا کلمه عبور اشتباه است.', 'error');
+                    } else {
+                        // ورود موفق
+                        window.currentUser = data;
+                        localStorage.setItem('rama_user', JSON.stringify(data)); // ذخیره ساده در لوکال استوریج
+                        
+                        window.app.renderNav();
+                        window.app.navigate('home');
+                        showMessage(`✅ خوش آمدید، ${data.username}!`, 'success');
+                        document.getElementById('status-text').innerText = `وارد شده: ${data.username}`;
+                    }
+
+                } catch (error) {
+                    console.error("Login failed:", error);
+                    showMessage(`خطا در ورود: ${error.message}`, 'error');
+                }
+            },
+
+            logout: function() {
+                window.currentUser = null;
+                localStorage.removeItem('rama_user');
+                window.app.renderNav();
+                window.app.navigate('home');
+                showMessage('با موفقیت خارج شدید.', 'success');
+            },
+            
+            checkSession: function() {
+                const saved = localStorage.getItem('rama_user');
+                if (saved) {
+                    window.currentUser = JSON.parse(saved);
+                    document.getElementById('status-text').innerText = `بازگشت کاربر: ${window.currentUser.username}`;
+                }
+            }
+        };
+
+
+        // --- برنامه اصلی و مسیریابی ---
+        const app = {
+            currentPage: 'home',
+            currentForumId: null,
+            currentTopicId: null,
+            
+            init: function() {
+                authApp.checkSession();
+                this.renderNav();
+                this.startClock();
+                this.navigate('home');
+            },
+
+            renderNav: function() {
+                const nav = document.getElementById('auth-buttons');
+                const user = window.currentUser;
+                const username = user ? user.username : null;
+                const role = user ? user.role : 'Guest';
+                
+                let roleColor = '#888';
+                if (role === 'Owner') roleColor = '#800000';
+                else if (role === 'Admin') roleColor = '#008000';
+                else if (role === 'VIP') roleColor = '#0000ff';
+
+                nav.innerHTML = `
+                    <button class="nav-btn" onclick="app.navigate('home')"><i class="bi bi-house"></i> صفحه اصلی</button>
+                    ${username ? `
+                        <button class="nav-btn" onclick="alert('پروفایل در حال ساخت...')"><i class="bi bi-person-circle"></i> پروفایل [${username}]</button>
+                        <span style="padding: 5px 10px; font-weight: bold; color: ${roleColor}; border: 1px dashed ${roleColor}; border-radius: 4px;">سطح: ${role}</span>
+                        <button class="nav-btn" onclick="authApp.logout()"><i class="bi bi-box-arrow-right"></i> خروج</button>
+                    ` : `
+                        <button class="nav-btn" onclick="app.navigate('auth')" style="background-color: #f7f7f7;"><i class="bi bi-lock"></i> ورود / عضویت</button>
+                    `}
+                `;
+            },
+
+            navigate: function(page, id = null) {
+                const main = document.getElementById('main-content');
+                main.innerHTML = '';
+                this.currentPage = page;
+                if(id) this.currentId = id;
+
+                if (page === 'home') {
+                    const tpl = document.getElementById('tpl-home');
+                    main.appendChild(tpl.content.cloneNode(true));
+                    this.loadForums();
+                } 
+                else if (page === 'auth') {
+                    const tpl = document.getElementById('tpl-auth');
+                    main.appendChild(tpl.content.cloneNode(true));
+                    authApp.toggleAuthMode('login');
+                }
+                else if (page === 'forum') {
+                    this.currentForumId = id;
+                    const tpl = document.getElementById('tpl-forum');
+                    main.appendChild(tpl.content.cloneNode(true));
+                    this.loadTopics(id);
+                }
+                else if (page === 'topic') {
+                    this.currentTopicId = id;
+                    const tpl = document.getElementById('tpl-topic');
+                    main.appendChild(tpl.content.cloneNode(true));
+                    this.loadPosts(id);
+                }
+                else if (page === 'new-topic') {
+                    if (!window.currentUser) {
+                         showMessage('برای ایجاد موضوع باید وارد شوید.', 'error');
+                         this.navigate('auth');
+                         return;
+                    }
+                    const tpl = document.getElementById('tpl-new-topic');
+                    main.appendChild(tpl.content.cloneNode(true));
+                    
+                    // لود کردن ادیتور برای ایجاد تاپیک
+                    const editorContainer = document.getElementById('new-topic-editor-container');
+                    const tplEditor = document.getElementById('tpl-editor');
+                    editorContainer.appendChild(tplEditor.content.cloneNode(true));
+                    
+                    document.getElementById('submit-post-btn').style.display = 'none'; // مخفی کردن دکمه پیشفرض ادیتور
+                    this.setupEditorEvents();
+                }
+            },
+
+            loadForums: async function() {
+                const tbody = document.getElementById('forum-list');
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">در حال بارگذاری اطلاعات از Supabase...</td></tr>';
+                
+                const forums = await dbService.fetchForums();
+
+                tbody.innerHTML = '';
+                if (!forums || forums.length === 0) {
+                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:red;">تالاری یافت نشد یا ارتباط با دیتابیس برقرار نشد. (لطفا SQL را اجرا کنید)</td></tr>';
+                     return;
+                }
+
+                forums.forEach(forum => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'forum-row';
+                    
+                    tr.innerHTML = `
+                        <td class="forum-cell cell-icon"><i class="bi ${forum.icon || 'bi-folder'}" style="font-size:24px; color:#000080;"></i></td>
+                        <td class="forum-cell cell-main">
+                            <strong><a href="#" onclick="app.navigate('forum', ${forum.id})" style="color:var(--link-blue);">${forum.title}</a></strong>
+                            <br><small>${forum.description || ''}</small>
+                        </td>
+                        <td class="forum-cell cell-stats">
+                            ${forum.topic_count || 0} موضوع<br>
+                        </td>
+                        <td class="forum-cell cell-last">
+                            ${forum.last_post_id ? 'آپدیت شده' : '---'}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('status-text').innerText = 'داده‌ها از Supabase دریافت شدند.';
+            },
+
+            loadTopics: async function(forumId) {
+                const tbody = document.getElementById('topic-list-body');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">در حال بارگذاری موضوعات...</td></tr>';
+                
+                // گرفتن اطلاعات تالار برای تایتل
+                const forumInfo = await dbService.getForumInfo(forumId);
+                if(forumInfo) document.getElementById('forum-page-title').textContent = `تالار: ${forumInfo.title}`;
+
+                const topics = await dbService.fetchTopics(forumId);
+
+                tbody.innerHTML = '';
+                if(!topics || topics.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">هیچ موضوعی در این تالار وجود ندارد.</td></tr>';
+                    return;
+                }
+
+                topics.forEach(topic => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'forum-row';
+                    const dateStr = window.toPersianDate(topic.creation_date);
+                    
+                    tr.innerHTML = `
+                        <td class="forum-cell" style="text-align:center;"><i class="bi bi-chat-text" style="color:#000080;"></i></td>
+                        <td class="forum-cell cell-main">
+                            <a href="#" onclick="app.navigate('topic', ${topic.id})" style="font-weight:bold; color:var(--link-blue);">${topic.title}</a>
+                            <br><small>توسط: ${topic.authorUsername} | ${dateStr}</small>
+                        </td>
+                        <td class="forum-cell center">${topic.authorUsername}</td>
+                        <td class="forum-cell center">${topic.replies}</td>
+                        <td class="forum-cell center">${topic.views}</td>
+                        <td class="forum-cell cell-last">${window.toPersianDate(topic.last_post_date)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            },
+            
+            loadPosts: async function(topicId) {
+                const container = document.getElementById('posts-container');
+                container.innerHTML = '<div style="text-align:center; padding:30px;">در حال دریافت پست‌ها...</div>';
+
+                const topicInfo = await dbService.getTopicInfo(topicId);
+                document.getElementById('topic-title-display').textContent = topicInfo ? topicInfo.title : 'موضوع';
+                
+                // افزایش بازدید (آپدیت ساده)
+                sb.from('topics').update({ views: (topicInfo?.views || 0) + 1 }).eq('id', topicId).then();
+
+                const posts = await dbService.fetchPosts(topicId);
+
+                container.innerHTML = '';
+                if(posts.length === 0) {
+                     container.innerHTML = '<div style="padding:20px;">هنوز پستی در این تاپیک وجود ندارد.</div>';
+                }
+
+                posts.forEach(post => {
+                    const u = post.userDetails || { username: 'Unknown', role: 'User', avatar: defaultAvatars[3], joinDate: new Date(), postCount: 0 };
+                    
+                    const postDiv = document.createElement('div');
+                    postDiv.className = 'post-container';
+                    
+                    const roleText = u.role || 'User';
+                    const roleClass = `role-${roleText}`;
+
+                    postDiv.innerHTML = `
+                        <div class="post-sidebar">
+                            <img src="${u.avatar || u.avatar_url || defaultAvatars[3]}" onerror="this.src='${defaultAvatars[3]}'" class="user-avatar">
+                            <div class="username-display">${u.username}</div>
+                            <span class="role-badge ${roleClass}">${roleText}</span>
+                            
+                            <div class="user-stats">
+                                <span class="user-stats-item">عضویت: <b>${window.toPersianDate(u.joinDate || u.join_date)}</b></span>
+                                <span class="user-stats-item">پست‌ها: <b>${u.postCount || u.post_count || 0}</b></span>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <div class="post-header">
+                                <div>ارسال شده در: <strong>${window.toPersianDate(post.creation_date)}</strong></div>
+                                <div><a href="#" style="color:#800000; text-decoration:underline;">#${post.id}</a></div>
+                            </div>
+                            <div class="post-text">
+                                ${BBCodeToHTML(post.content)}
+                            </div>
+                            ${u.sign || u.signature ? `<div class="signature">${u.sign || u.signature}</div>` : ''}
+                            <div class="post-actions">
+                                <button class="nav-btn"><i class="bi bi-hand-thumbs-up"></i> تشکر (${post.likes})</button>
+                                <button class="nav-btn"><i class="bi bi-quote"></i> نقل قول</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(postDiv);
+                });
+                
+                this.renderQuickReply();
+                document.getElementById('status-text').innerText = 'پست‌ها بارگذاری شدند.';
+            },
+
+            renderQuickReply: function() {
+                const replyBox = document.getElementById('quick-reply-box');
+                const tplEditor = document.getElementById('tpl-editor');
+
+                if (window.currentUser) {
+                    replyBox.innerHTML = '';
+                    replyBox.appendChild(tplEditor.content.cloneNode(true));
+                    this.setupEditorEvents();
+                } else {
+                    replyBox.innerHTML = `
+                        <div class="window" style="background:#ffdddd;">
+                            <div class="window-body" style="text-align:center; color:#800000; font-size: 13px;">
+                                شما مهمان هستید. برای ارسال پاسخ 
+                                <a href="#" onclick="app.navigate('auth')" style="color:#000080; font-weight:bold;">وارد شوید</a>.
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            
+            submitNewTopic: async function() {
+                const title = document.getElementById('new-topic-title').value.trim();
+                const content = document.getElementById('post-textarea').value.trim();
+                
+                if(!title || !content) { showMessage('عنوان و متن موضوع الزامی است.', 'error'); return; }
+                
+                try {
+                    showMessage('در حال ارسال...', 'info');
+                    const newTopicId = await dbService.createTopic(this.currentForumId, title, content, window.currentUser.id);
+                    showMessage('✅ موضوع با موفقیت ایجاد شد!', 'success');
+                    this.navigate('topic', newTopicId);
+                } catch (e) {
+                    showMessage('خطا در ایجاد موضوع: ' + e.message, 'error');
+                }
+            },
+
+            setupEditorEvents: function() {
+                const textarea = document.getElementById('post-textarea');
+                const toolbar = document.querySelector('.editor-toolbar');
+                const previewBtn = document.getElementById('preview-btn');
+                const previewBox = document.getElementById('post-preview');
+                const submitBtn = document.getElementById('submit-post-btn');
+
+                // دکمه‌های BBCode
+                if(toolbar) {
+                    toolbar.addEventListener('click', (e) => {
+                        const btn = e.target.closest('.editor-btn');
+                        if (!btn) return;
+
+                        const tag = btn.dataset.tag;
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        const selectedText = textarea.value.substring(start, end);
+                        let newText = '';
+
+                        if (tag === 'url') {
+                            const link = prompt("لینک URL را وارد کنید:");
+                            if (link) newText = `[url=${link}]${selectedText || 'لینک شما'}[/url]`;
+                        } else if (tag === 'img') {
+                             const imgUrl = prompt("لینک عکس (URL) را وارد کنید:");
+                            if (imgUrl) newText = `[img]${imgUrl}[/img]`;
+                        } else if (tag === 'color') {
+                             const color = prompt("رنگ را وارد کنید (مثلاً red یا #FF0000):");
+                            if (color) newText = `[color=${color}]${selectedText || 'متن رنگی'}[/color]`;
+                        } else if (tag === 'quote') {
+                             newText = `[quote]${selectedText || 'متن نقل قول'}[/quote]`;
+                        } else if (tag === 'code') {
+                             newText = `[code]\n${selectedText || 'کد شما'}\n[/code]`;
+                        } else {
+                            newText = `[${tag}]${selectedText}[/${tag}]`;
+                        }
+                        
+                        if (newText) {
+                            textarea.value = textarea.value.substring(0, start) + newText + textarea.value.substring(end);
+                            textarea.focus();
+                        }
+                    });
+                }
+
+                if(previewBtn) {
+                    previewBtn.onclick = () => {
+                        const htmlContent = BBCodeToHTML(textarea.value);
+                        previewBox.style.display = 'block';
+                        previewBox.querySelector('.window-body').innerHTML = `
+                            <div class="post-text">${htmlContent}</div>
+                        `;
+                    };
+                }
+
+                if(submitBtn) {
+                    submitBtn.onclick = async () => {
+                        const postContent = textarea.value.trim();
+                        if (!postContent) { showMessage('متن پست خالی است.', 'error'); return; }
+
+                        try {
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'در حال ارسال...';
+                            
+                            await dbService.sendPost(this.currentTopicId, postContent, window.currentUser.id);
+                            
+                            textarea.value = '';
+                            previewBox.style.display = 'none';
+                            showMessage('✅ پاسخ شما با موفقیت ارسال شد.', 'success');
+                            
+                            // رفرش کردن صفحه برای دیدن پست جدید
+                            app.loadPosts(this.currentTopicId);
+                            
+                        } catch (error) {
+                             console.error("Post submission failed:", error);
+                             showMessage(`خطا در ارسال پست: ${error.message}`, 'error');
+                        } finally {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="bi bi-send-check"></i> ارسال پاسخ';
+                        }
+                    };
+                }
+            },
+
+            startClock: function() {
+                const updateClock = () => {
+                    const now = new Date();
+                    const options = { 
+                        year: 'numeric', month: '2-digit', day: '2-digit', 
+                        hour: '2-digit', minute: '2-digit', second: '2-digit', 
+                        hour12: false 
+                    };
+                    const fullDate = now.toLocaleString('fa-IR', options).replace(',', '');
+                    document.getElementById('clock-full').innerText = fullDate;
+                };
+                setInterval(updateClock, 1000);
+                updateClock();
+            }
+        };
+
+        window.app = app;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            app.init();
+        });
+    </script>
+</body>
+</html>
